@@ -18,10 +18,7 @@ find_package(catkin REQUIRED COMPONENTS
   message_generation
 )
 
-find_package(Franka 0.9.0 QUIET)
-if(NOT Franka_FOUND)
-  find_package(Franka 0.8.0 REQUIRED)
-endif()
+find_package(Franka 0.7.0 REQUIRED)
 
 catkin_package(
   INCLUDE_DIRS include
@@ -68,10 +65,6 @@ target_include_directories(franka_hw SYSTEM PUBLIC
 target_include_directories(franka_hw PUBLIC
   include
 )
-
-if (Franka_VERSION GREATER_EQUAL 0.9)
-  target_compile_definitions(franka_hw PUBLIC ENABLE_BASE_ACCELERATION)
-endif()
 
 ## franka_control_services
 add_library(franka_control_services

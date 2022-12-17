@@ -40,20 +40,15 @@ void gripperCommandExecuteCallback(
 
     franka::GripperState state = gripper.readOnce();
     if (target_width > state.max_width || target_width < 0.0) {
-      std::string error = "Commanding out of range position! max_position = " +
-                          std::to_string(state.max_width / 2) +
-                          ", commanded position = " + std::to_string(goal->command.position) +
-                          ". Be aware that you command the position of"
-                          " each finger which is half of the total opening width!";
-      ROS_ERROR_STREAM("GripperServer: " << error);
+      ROS_ERROR_STREAM("GripperServer: Commanding out of range width! max_width = "
+                       << state.max_width << " command = " << target_width);
       return false;
     }
     constexpr double kSamePositionThreshold = 1e-4;
     if (std::abs(target_width - state.width) < kSamePositionThreshold) {
       return true;
     }
-    constexpr double kMinimumGraspForce = 1e-4;
-    if (std::abs(goal->command.max_effort) < kMinimumGraspForce or target_width >= state.width) {
+    if (target_width >= state.width) {
       return gripper.move(target_width, default_speed);
     }
     return gripper.grasp(target_width, default_speed, goal->command.max_effort, grasp_epsilon.inner,
